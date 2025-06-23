@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+:root {
+    --custom-font: "Inter";
+    --body-font: var(--custom-font), var(--sans-serif-font);
+}
+
+.hero {
+    width: 100%;
+    background-color: #88888888;
+}
+
+.nobold { font-weight: normal; }
+
+#bus-timings {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+}
+
+.stop-container {
+    width: 20em;
+}
+
+.service-id {
+    display: inline-block;
+    padding: 5px;
+    background-color: #03C04A88;
+    border-color: #03C04AAA;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+}
+
+.time-indicator {
+    display: inline-block;
+    border-bottom: 2px solid;
+    border-color: #888888;
+
+    line-height: initial;
+}
+
+#bus-timings .time-indicator {
+    margin-left: 15px;
+}
+
+.unmonitored-schedule {
+    border-bottom-style: dashed;
+}
+
+.seat { border-color: #00ff00; }
+.stand { border-color: #ffff00; }
+.limited { border-color: #ff0000; }
+
+.service-holder {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.service-container {
+    margin-bottom: .5em;
+}
+
+.stop-container > :first-child {
+    margin-bottom: .5em;
+}
+
+@media (prefers-color-scheme: dark) {
+    a {
+        color: #00ffff;
+    }
+} 
+
+@media (prefers-color-scheme: light) {
+    .seat { border-color: #008800; }
+    .stand { border-color: #ffbf00; }
+    .limited { border-color: #ff0000; }
+}
+
+
+a:visited { color: auto; }
+
+section > :first-child {
+    margin-top: 0;
+}

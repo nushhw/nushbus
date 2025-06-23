@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" class="pad-inner">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>NUSH Bus Timings</title>
+
+        <base target="_blank">
+
+        <link href="https://gohjy.github.io/base-css/css/main.css" rel="stylesheet">
+
+        <link href="./style.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="hero textcent">
+            <h1>NUSH Bus Timings</h1>
+        </div>
+        <main id="bus-timings">
+            <p class="full-width">
+                <span class="italic" id="last-update">
+                    Loading data...
+                </span>
+                |
+                <a href="#legend" target="_self">
+                    Legend
+                </a>
+            </p>
+
+            <!-- <div class="stop-container" data-stop-id="00000">
+                <h2>
+                    <span class="nobold">00000</span>
+                    This Stop
+                    <br>
+                    <span class="small nobold">
+                        EXP (Dir) - Some Shorthand
+                    </span>
+                </h2>
+                <div class="service-holder">
+                    <div class="service-container">
+                        <span class="service-id">
+                            BUS
+                        </span>
+                        <span class="time-indicator seat">
+                            3 min
+                        </span>
+                    </div>
+            </div> -->
+        </main>
+
+        <hr>
+
+        <section id="legend">
+            <h2>Legend</h2>
+            <p>
+                Colors:
+                <span class="time-indicator seat">
+                    Seating available
+                </span>
+                |
+                <span class="time-indicator stand">
+                    Standing available
+                </span>
+                |
+                <span class="time-indicator no">
+                    Standing limited
+                </span>
+            </p>
+            <p>
+                Line style:
+                <span class="time-indicator">
+                    Real-time data
+                </span>
+                |
+                <span class="time-indicator unmonitored-schedule">
+                    Timing based on schedule
+                </span>
+            </p>
+        </section>
+
+        <section id="about">
+            <h2>About</h2>
+            <p>
+                This site pulls data from <a href="https://datamall.lta.gov.sg">LTA's DataMall</a> (through cheeaun's <a href="https://github.com/cheeaun/arrivelah">arrivelah API</a>) every 30 seconds. It is intended as a (nicer-looking) alternative to AppVenture's <a href="https://bustimings.nush.app">bustimings-v2 website</a>.
+            </p>
+        </section>
+
+        <script src="./script.js"></script>
+    </body>
+</html>
