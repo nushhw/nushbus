@@ -34,23 +34,11 @@ const dateToTime = (dateObj) => {
 
 const getArrData = async (stopCode) => {
     if (typeof stopCode !== "number") return false;
-
     return await fetch(`https://arrivelah2.busrouter.sg/?id=${stopCode}`)
-    .then(x => x.json())
-    .catch(() => false);
-}
-function reorderServices(stopCode) {
-    const svcHolder = document.querySelector(`[data-stop-id="${stopCode}"] .service-holder`);
-    const children = Array.from(svcHolder.querySelectorAll(".service-container"));
-    children.sort((a, b) => {
-        const aStar = starredServices.has(`${stopCode}-${a.dataset.service}`);
-        const bStar = starredServices.has(`${stopCode}-${b.dataset.service}`);
-        return (aStar === bStar) ? a.style.order - b.style.order : bStar - aStar;
-    });
-    children.forEach(child => svcHolder.appendChild(child));
+        .then(x => x.json())
+        .catch(() => false);
 }
 
-const newElem = x => document.createElement(x);
 let starredServices = new Set(JSON.parse(localStorage.getItem("starred-services") || "[]"));
 
 function toggleServiceStar(busNo, stopCode, btn) {
@@ -64,6 +52,20 @@ function toggleServiceStar(busNo, stopCode, btn) {
     btn.textContent = starredServices.has(key) ? "★" : "☆";
     reorderServices(stopCode);
 }
+
+function reorderServices(stopCode) {
+    const svcHolder = document.querySelector(`[data-stop-id="${stopCode}"] .service-holder`);
+    const children = Array.from(svcHolder.querySelectorAll(".service-container"));
+    children.sort((a, b) => {
+        const aStar = starredServices.has(`${stopCode}-${a.dataset.service}`);
+        const bStar = starredServices.has(`${stopCode}-${b.dataset.service}`);
+        return (aStar === bStar) ? a.style.order - b.style.order : bStar - aStar;
+    });
+    children.forEach(child => svcHolder.appendChild(child));
+}
+
+const newElem = x => document.createElement(x);
+
 /*starred service can be like pinned or sth so better reference otherwise take 2.5 trillion years to find */
 const initPage = () => {
     const mainContainer = document.querySelector("#bus-timings");
@@ -74,19 +76,25 @@ const initPage = () => {
 
         const stopHeader = document.createElement("h2");
 
-        
         const starBtn = newElem("button");
         starBtn.classList.add("star-toggle");
         starBtn.innerHTML = "☆";
         starBtn.title = "Click to star this stop";
         starBtn.onclick = () => toggleStar(stop.code, starBtn);
-        
+
         const stopCodeHolder = newElem("span");
         stopCodeHolder.textContent = stop.code;
         stopCodeHolder.classList.add("nobold");
-        
+
+        const stopNameHolder = newElem("span");
+        stopNameHolder.textContent = stop.name;
+
+        const stopMetaHolder = newElem("span");
+        stopMetaHolder.textContent = `${stop.road} - ${stop.shortName}`;
+        stopMetaHolder.classList.add("small", "nobold");
+
         stopHeader.append(
-            starBtn, // 👈 insert star button first
+            starBtn,
             " ",
             stopCodeHolder,
             " ",
@@ -107,6 +115,30 @@ const initPage = () => {
     }
 }
 
+let starredStops = new Set(JSON.parse(localStorage.getItem("starred-stops") || "[]"));
+
+function toggleStar(code, btn) {
+    if (starredStops.has(code)) {
+        starredStops.delete(code);
+    } else {
+        starredStops.add(code);
+    }
+    localStorage.setItem("starred-stops", JSON.stringify([...starredStops]));
+    btn.innerHTML = starredStops.has(code) ? "★" : "☆";
+    reorderStops();
+}
+
+function reorderStops() {
+    const container = document.querySelector("#bus-timings");
+    const children = Array.from(container.querySelectorAll(".stop-container"));
+    children.sort((a, b) => {
+        const aStar = starredStops.has(+a.dataset.stopId);
+        const bStar = starredStops.has(+b.dataset.stopId);
+        return (aStar === bStar) ? 0 : aStar ? -1 : 1;
+    });
+    children.forEach(child => container.appendChild(child));
+}
+
 const loadData = async () => {
     if (!document.querySelector(".stop-container")) initPage();
 
@@ -121,7 +153,6 @@ const loadData = async () => {
         const svcHolder = stopBox.querySelector(":scope .service-holder");
 
         const data = await getArrData(stop.code);
-        console.log(data);
 
         if (!data || !stopBox) {
             alert("Something went wrong! Check your network connection.");
@@ -141,23 +172,21 @@ const loadData = async () => {
 
                 const svcId = document.createElement("span");
                 svcId.classList.add("service-id");
-                
+
                 const serviceKey = `${stop.code}-${svc.no}`;
                 const starBtn = newElem("button");
                 starBtn.classList.add("star-toggle");
                 starBtn.title = "Star this bus service";
                 starBtn.textContent = starredServices.has(serviceKey) ? "★" : "☆";
                 starBtn.onclick = () => toggleServiceStar(svc.no, stop.code, starBtn);
-                
+
                 const busLabel = document.createElement("span");
                 busLabel.textContent = svc.no;
-                
+
                 svcId.append(starBtn, busLabel);
-
-
                 svcCont.append(svcId);
 
-                for (let i=1; i<=3; i++) {
+                for (let i = 1; i <= 3; i++) {
                     const timeBox = document.createElement("span");
                     timeBox.classList.add("time-indicator");
                     timeBox.textContent = "N/A";
@@ -166,8 +195,6 @@ const loadData = async () => {
                 }
 
                 svcHolder.append(svcCont);
-                reorderServices(stop.code);
-
             }
 
             const svcCont = svcHolder.querySelector(`:scope [data-service="${svc.no}"]`);
@@ -182,13 +209,13 @@ const loadData = async () => {
                 const comingTime = new Date(svc[key].time);
                 const offset = milToMins(Math.max(comingTime - new Date(), 0));
 
-                indicator.textContent = ((offset === 0) ? "Arr" : `${offset} min`);
-
+                indicator.textContent = offset === 0 ? "Arr" : `${offset} min`;
                 indicator.classList.toggle("unmonitored-schedule", !!svc[key].monitored);
-                
-                setClass(indicator, {"SEA":"seat","SDA":"stand","LSD":"no"}[svc[key].load]);
+                setClass(indicator, { "SEA": "seat", "SDA": "stand", "LSD": "no" }[svc[key].load]);
             }
         }
+
+        reorderServices(stop.code);
     }
 
     document.querySelector("#last-update").textContent = "Last updated " + dateToTime(new Date());
