@@ -157,4 +157,4 @@ const loadData = async () => {
 
 initPage();
 loadData();
-setInterval(loadData, 30000);
+setInterval(loadData, 10000);
