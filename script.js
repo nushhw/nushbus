@@ -53,11 +53,39 @@ function toggleServiceStar(busNo, stopCode, btn) {
     btn.textContent = starredServices.has(key) ? "★" : "☆";
     reorderServices(stopCode);
 }
-function updateGlobalStarBanner() {
-    const list = Array.from(starredServices).sort();
-    const label = list.length ? list.join(", ") : "None";
-    document.getElementById("watched-buses").textContent = label;
+async function updateGlobalStarBanner() {
+    const container = document.getElementById("watched-buses");
+    const entries = Array.from(starredServices).sort();
+    if (entries.length === 0) {
+        container.textContent = "None";
+        return;
+    }
+
+    let output = [];
+    for (const key of entries) {
+        const [stopCode, busNo] = key.split("-");
+        const stop = stops.find(s => s.code == stopCode);
+        const shortName = stop ? stop.shortName : stopCode;
+        const data = await getArrData(+stopCode);
+        const svc = data.services.find(s => s.no === busNo);
+        if (!svc) {
+            output.push(`${shortName}: ${busNo} - no data`);
+            continue;
+        }
+
+        const arrival = t => {
+            if (!t?.time) return "—";
+            const offset = Math.max(0, Math.floor((new Date(t.time) - new Date()) / 60000));
+            return offset === 0 ? "Arr" : `${offset} min`;
+        };
+
+        const times = [arrival(svc.next), arrival(svc.next2), arrival(svc.next3)].join(", ");
+        output.push(`${shortName}: ${busNo} → ${times}`);
+    }
+
+    container.textContent = output.join("\n");
 }
+
     
 function reorderServices(stopCode) {
     const svcHolder = document.querySelector(`[data-stop-id="${stopCode}"] .service-holder`);
