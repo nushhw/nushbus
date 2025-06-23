@@ -41,7 +41,20 @@ const getArrData = async (stopCode) => {
 }
 
 const newElem = x => document.createElement(x);
+let starredServices = new Set(JSON.parse(localStorage.getItem("starred-services") || "[]"));
 
+function toggleServiceStar(busNo, stopCode, btn) {
+    const key = `${stopCode}-${busNo}`;
+    if (starredServices.has(key)) {
+        starredServices.delete(key);
+    } else {
+        starredServices.add(key);
+    }
+    localStorage.setItem("starred-services", JSON.stringify([...starredServices]));
+    btn.textContent = starredServices.has(key) ? "★" : "☆";
+    reorderServices(stopCode);
+}
+/*starred service can be like pinned or sth so better reference otherwise take 2.5 trillion years to find */
 const initPage = () => {
     const mainContainer = document.querySelector("#bus-timings");
     for (let stop of stops) {
@@ -51,18 +64,20 @@ const initPage = () => {
 
         const stopHeader = document.createElement("h2");
 
+        
+        const starBtn = newElem("button");
+        starBtn.classList.add("star-toggle");
+        starBtn.innerHTML = "☆";
+        starBtn.title = "Click to star this stop";
+        starBtn.onclick = () => toggleStar(stop.code, starBtn);
+        
         const stopCodeHolder = newElem("span");
         stopCodeHolder.textContent = stop.code;
         stopCodeHolder.classList.add("nobold");
-
-        const stopNameHolder = newElem("span");
-        stopNameHolder.textContent = stop.name;
-
-        const stopMetaHolder = newElem("span");
-        stopMetaHolder.textContent = `${stop.road} - ${stop.shortName}`;
-        stopMetaHolder.classList.add("small", "nobold");
-
+        
         stopHeader.append(
+            starBtn, // 👈 insert star button first
+            " ",
             stopCodeHolder,
             " ",
             stopNameHolder,
