@@ -21,7 +21,7 @@ const stops = [
         "code": 17121,
         "name": "Blk 610",
         "shortName": "Back Gate (Far)",
-        "road": "AYE (Tuas)"
+        "road": "AYE (Tuas)" /*CAN WE REMOVE THIS???????????????????????????????????????????????????????????????????????*/
     }
 ];
 
@@ -56,12 +56,20 @@ function toggleServiceStar(busNo, stopCode, btn) {
 function reorderServices(stopCode) {
     const svcHolder = document.querySelector(`[data-stop-id="${stopCode}"] .service-holder`);
     const children = Array.from(svcHolder.querySelectorAll(".service-container"));
-    children.sort((a, b) => {
-        const aStar = starredServices.has(`${stopCode}-${a.dataset.service}`);
-        const bStar = starredServices.has(`${stopCode}-${b.dataset.service}`);
-        return (aStar === bStar) ? a.style.order - b.style.order : bStar - aStar;
-    });
-    children.forEach(child => svcHolder.appendChild(child));
+    const starKey = id => `${stopCode}-${id.dataset.service}`;
+    const starred = children.filter(c => starredServices.has(starKey(c)));
+    const normal = children.filter(c => !starredServices.has(starKey(c)));
+
+    let banner = svcHolder.querySelector(".starred-banner");
+    if (banner) banner.remove();
+    if (starred.length) {
+        banner = document.createElement("div");
+        banner.textContent = "★ Starred Services";
+        banner.className = "starred-banner";
+        svcHolder.prepend(banner);
+    }
+
+    [...starred, ...normal].forEach(child => svcHolder.appendChild(child));
 }
 
 const newElem = x => document.createElement(x);
@@ -153,7 +161,6 @@ const loadData = async () => {
         const svcHolder = stopBox.querySelector(":scope .service-holder");
 
         const data = await getArrData(stop.code);
-
         if (!data || !stopBox) {
             alert("Something went wrong! Check your network connection.");
             return false;
