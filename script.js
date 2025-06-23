@@ -39,6 +39,16 @@ const getArrData = async (stopCode) => {
     .then(x => x.json())
     .catch(() => false);
 }
+function reorderServices(stopCode) {
+    const svcHolder = document.querySelector(`[data-stop-id="${stopCode}"] .service-holder`);
+    const children = Array.from(svcHolder.querySelectorAll(".service-container"));
+    children.sort((a, b) => {
+        const aStar = starredServices.has(`${stopCode}-${a.dataset.service}`);
+        const bStar = starredServices.has(`${stopCode}-${b.dataset.service}`);
+        return (aStar === bStar) ? a.style.order - b.style.order : bStar - aStar;
+    });
+    children.forEach(child => svcHolder.appendChild(child));
+}
 
 const newElem = x => document.createElement(x);
 let starredServices = new Set(JSON.parse(localStorage.getItem("starred-services") || "[]"));
@@ -131,7 +141,19 @@ const loadData = async () => {
 
                 const svcId = document.createElement("span");
                 svcId.classList.add("service-id");
-                svcId.textContent = svc.no;
+                
+                const serviceKey = `${stop.code}-${svc.no}`;
+                const starBtn = newElem("button");
+                starBtn.classList.add("star-toggle");
+                starBtn.title = "Star this bus service";
+                starBtn.textContent = starredServices.has(serviceKey) ? "★" : "☆";
+                starBtn.onclick = () => toggleServiceStar(svc.no, stop.code, starBtn);
+                
+                const busLabel = document.createElement("span");
+                busLabel.textContent = svc.no;
+                
+                svcId.append(starBtn, busLabel);
+
 
                 svcCont.append(svcId);
 
@@ -144,6 +166,8 @@ const loadData = async () => {
                 }
 
                 svcHolder.append(svcCont);
+                reorderServices(stop.code);
+
             }
 
             const svcCont = svcHolder.querySelector(`:scope [data-service="${svc.no}"]`);
