@@ -84,6 +84,14 @@ body {
     margin-right: 0.3em;
     vertical-align: middle;
 }
+#watched-buses {
+    margin-top: 0.5em;
+    font-size: 1em;
+    font-weight: normal;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
 .starred-banner {
     font-size: 0.9em;
     font-weight: 600;
