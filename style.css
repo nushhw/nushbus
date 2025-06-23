@@ -1,86 +1,117 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
 :root {
-    --custom-font: "Inter";
-    --body-font: var(--custom-font), var(--sans-serif-font);
+    --font-primary: 'Inter', sans-serif;
+    --color-bg-alt: #88888820;
+    --color-green: #03C04A;
+    --color-green-light: #03C04A88;
+    --color-green-border: #03C04AAA;
+    --color-gray: #888;
+}
+
+body {
+    font-family: var(--font-primary);
+    margin: 0;
+    padding: 1em;
+    background-color: #f9f9f9;
+    color: #111;
 }
 
 .hero {
     width: 100%;
-    background-color: #88888888;
+    background-color: var(--color-bg-alt);
+    padding: 1em;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.2em;
 }
-
-.nobold { font-weight: normal; }
 
 #bus-timings {
     display: flex;
-    flex-flow: row wrap;
+    flex-wrap: wrap;
     justify-content: space-between;
+    gap: 1.5em;
+    margin-top: 1em;
 }
 
 .stop-container {
     width: 20em;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 1em;
 }
 
-.service-id {
-    display: inline-block;
-    padding: 5px;
-    background-color: #03C04A88;
-    border-color: #03C04AAA;
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 5px;
+.nobold {
+    font-weight: normal;
 }
 
-.time-indicator {
-    display: inline-block;
-    border-bottom: 2px solid;
-    border-color: #888888;
-
-    line-height: initial;
+.stop-container h2 {
+    font-size: 1.1em;
+    margin-bottom: 0.5em;
 }
 
-#bus-timings .time-indicator {
-    margin-left: 15px;
+.small {
+    font-size: 0.9em;
+    color: #666;
 }
-
-.unmonitored-schedule {
-    border-bottom-style: dashed;
-}
-
-.seat { border-color: #00ff00; }
-.stand { border-color: #ffff00; }
-.limited { border-color: #ff0000; }
 
 .service-holder {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
+    gap: 0.5em;
 }
 
 .service-container {
-    margin-bottom: .5em;
+    display: flex;
+    align-items: center;
+    gap: 1em;
 }
 
-.stop-container > :first-child {
-    margin-bottom: .5em;
+.service-id {
+    padding: 4px 8px;
+    background-color: var(--color-green-light);
+    border: 1px solid var(--color-green-border);
+    border-radius: 5px;
+    font-weight: 600;
 }
+
+.time-indicator {
+    padding: 2px 6px;
+    border-bottom: 2px solid var(--color-gray);
+    font-size: 0.95em;
+    line-height: 1.2;
+    min-width: 3.5em;
+    text-align: center;
+}
+
+.time-indicator.unmonitored-schedule {
+    border-style: dashed;
+}
+
+.seat { border-color: #00cc00; }
+.stand { border-color: #ffcc00; }
+.limited, .no { border-color: #ff0000; }
 
 @media (prefers-color-scheme: dark) {
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+
+    .stop-container {
+        background-color: #1e1e1e;
+        color: #fff;
+    }
+
     a {
         color: #00ffff;
     }
-} 
-
-@media (prefers-color-scheme: light) {
-    .seat { border-color: #008800; }
-    .stand { border-color: #ffbf00; }
-    .limited { border-color: #ff0000; }
 }
 
-
-a:visited { color: auto; }
+a:visited {
+    color: inherit;
+}
 
 section > :first-child {
     margin-top: 0;
