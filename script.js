@@ -49,10 +49,16 @@ function toggleServiceStar(busNo, stopCode, btn) {
         starredServices.add(key);
     }
     localStorage.setItem("starred-services", JSON.stringify([...starredServices]));
+    updateGlobalStarBanner();
     btn.textContent = starredServices.has(key) ? "★" : "☆";
     reorderServices(stopCode);
 }
-
+function updateGlobalStarBanner() {
+    const list = Array.from(starredServices).sort();
+    const label = list.length ? list.join(", ") : "None";
+    document.getElementById("watched-buses").textContent = label;
+}
+    
 function reorderServices(stopCode) {
     const svcHolder = document.querySelector(`[data-stop-id="${stopCode}"] .service-holder`);
     const children = Array.from(svcHolder.querySelectorAll(".service-container"));
@@ -231,3 +237,5 @@ const loadData = async () => {
 initPage();
 loadData();
 setInterval(loadData, 10000);
+updateGlobalStarBanner();
+setInterval(updateGlobalStarBanner, 5000);
